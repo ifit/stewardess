@@ -1,0 +1,20 @@
+{
+  "name": "stewardess",
+  "version": "0.0.0",
+  "description": "serial async flow control",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ifit/stewardess.git"
+  },
+  "keywords": [
+    "flow-control",
+    "serial",
+    "async"
+  ],
+  "author": "Adam Blackburn",
+  "license": "MIT"
+}
