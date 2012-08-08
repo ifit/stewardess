@@ -2,7 +2,9 @@
 
 She keeps track of your serial async methods.
 
-install: `npm install stewardess`
+### install
+
+`npm install stewardess`
 
 ### Usage:
 
