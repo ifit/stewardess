@@ -1,7 +1,7 @@
 "use strict";
 
 var http = require('http')
-  , stewardess = require('./index')
+  , stewardess = require('../index')
 
 var handle = stewardess(
   function(req, res, next) {
