@@ -4,6 +4,7 @@ var events = require('events')
   , util   = require('util')
   , EventEmitter = events.EventEmitter
 
+// create a new instance of Stewardess and return it
 function stewardess() {
   var queue = ( arguments.length === 1
               ? [arguments[0]]
@@ -13,41 +14,80 @@ function stewardess() {
 }
 module.exports = stewardess;
 
+// class defenition
 function Stewardess(queue) {
   EventEmitter.call(this);
   this.queue = queue;
 }
 util.inherits(Stewardess, EventEmitter);
 
+// run through the queue
 Stewardess.prototype.run = function() {
   var queue = this.queue
+    , queuePos = 0
     , self = this
+    , context = this.context || this
     , args = ( arguments.length === 1
              ? [arguments[0]]
              : Array.apply(null, arguments));
 
+  // prepare argument arrays for different events
+  var afterArgs = args.concat()
+    , beforeArgs = args.concat()
+    , doneArgs = args.concat();
+
+  afterArgs.unshift('after');
+  beforeArgs.unshift('before');
+  doneArgs.unshift('done');
+
+  // push the callback onto the arguments
   args.push(function(err) {
-    if (err) return this.emit('error', err);
-    self.emit('after');
-    self.emit('next');
+    if (err) return this.emit('_error', err);
+    self.emit.apply(self, afterArgs);
+    next();
   });
 
-  self.on('next', next);
-  self.emit('next');
+  self.once('_error', handleError);
+
+  function handleError(err) {
+    // we are done, so we can change the args array
+    args.unshift('error', err);
+    args.pop();
+    this.emit.apply(this, args);
+  }
+
+  // start
+  next();
 
   function next() {
-    if (queue.length) {
-      self.emit('before');
-      var fn = queue.shift();
+    // check if we are finished
+    if (queuePos < queue.length) {
+      self.emit.apply(self, beforeArgs);
+
+      // get next method
+      var fn = queue[queuePos++]
+
       try {
-        fn.apply(self, args);
+        fn.apply(context, args);
       } catch (e) {
-        return self.emit('error', e);
+        return self.emit('_error', e);
       }
+
     } else {
-      self.emit('done');
+      self.removeListener('_error', handleError);
+      self.emit.apply(self, doneArgs);
     }
   }
+
+}
+
+Stewardess.prototype.context = function(context) {
+  this.context = context;
+  return this;
+}
+
+Stewardess.prototype.bind = function() {
+  return this.run.bind(this);
 }
 
 Stewardess.prototype.add = function(fn) {
@@ -56,21 +96,25 @@ Stewardess.prototype.add = function(fn) {
 }
 
 Stewardess.prototype.after = function(fn) {
-  this.on('after', fn);
-  return this;
+  return this.contextOn('after', fn);
 }
 
 Stewardess.prototype.before = function(fn) {
-  this.on('before', fn);
-  return this;
+  return this.contextOn('before', fn);
 }
 
 Stewardess.prototype.error = function(fn) {
-  this.on('error', fn);
-  return this;
+  return this.contextOn('error', fn);
 }
 
 Stewardess.prototype.done = function(fn) {
-  this.on('done', fn);
-  return this;
+  return this.contextOn('done', fn);
+}
+
+Stewardess.prototype.contextOn = function(event, fn) {
+  var self = this;
+  this.on(event, function() {
+    fn.apply(self.context, arguments);
+  });
+  return self;
 }

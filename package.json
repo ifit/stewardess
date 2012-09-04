@@ -4,7 +4,7 @@
   "description": "serial async flow control",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "mocha test --reporter spec --slow 1"
   },
   "repository": {
     "type": "git",
