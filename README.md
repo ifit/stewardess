@@ -84,10 +84,10 @@ stewardess(
   }
 )
 .after(function(meow, mix) {
-  // after also gets arguments
+  // before, after, and done also get arguments
 })
 .error(function(err, meow, mix) {
-  // error also gets arguments with the error
+  // error gets arguments with the error
 })
 .run('meow', {meow: 'mix'});
 ```
