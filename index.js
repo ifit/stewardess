@@ -42,19 +42,10 @@ Stewardess.prototype.run = function() {
 
   // push the callback onto the arguments
   args.push(function(err) {
-    if (err) return this.emit('_error', err);
+    if (err) return this._error(err, args);
     self.emit.apply(self, afterArgs);
     next();
   });
-
-  self.once('_error', handleError);
-
-  function handleError(err) {
-    // we are done, so we can change the args array
-    args.unshift('error', err);
-    args.pop();
-    this.emit.apply(this, args);
-  }
 
   // start
   next();
@@ -65,20 +56,25 @@ Stewardess.prototype.run = function() {
       self.emit.apply(self, beforeArgs);
 
       // get next method
-      var fn = queue[queuePos++]
+      var fn = queue[queuePos++];
 
       try {
         fn.apply(context, args);
       } catch (e) {
-        return self.emit('_error', e);
+        return self._error(e, args);
       }
 
     } else {
-      self.removeListener('_error', handleError);
       self.emit.apply(self, doneArgs);
     }
   }
 
+}
+
+Stewardess.prototype._error = function(err, args) {
+  args.unshift('error', err);
+  args.pop();
+  this.emit.apply(this, args);
 }
 
 Stewardess.prototype.context = function(context) {

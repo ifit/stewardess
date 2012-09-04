@@ -292,7 +292,7 @@ function performanceTest() {
   }
 
   var go = stewardess(incr, incr, incr, incr, incr).bind();
-  for(var i = 0; i < 10000; ++i) {
+  for (var i = 0; i < 10000; ++i) {
     go(i);
   }
 
