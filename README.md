@@ -33,7 +33,7 @@ stewardess(
 ).run();
 ```
 
-stewardess has lot's of chainable methods:
+### stewardess has lot's of chainable methods:
 
 ```javascript
 stewardess(
@@ -63,10 +63,11 @@ stewardess(
   // if any method throws an error,
   // or calls next(err), it ends up here
 })
+.context({'some':'object'}) // set this-ness for all callbacks
 .run(); // this starts it
 ```
 
-you can also pass arguments into `run()`, which will be sent to each method along the way
+### you can also pass arguments into `run()`, which will be sent to each method along the way
 
 ```javascript
 stewardess(
@@ -82,5 +83,11 @@ stewardess(
     next();
   }
 )
+.after(function(meow, mix) {
+  // after also gets arguments
+})
+.error(function(err, meow, mix) {
+  // error also gets arguments with the error
+})
 .run('meow', {meow: 'mix'});
 ```
