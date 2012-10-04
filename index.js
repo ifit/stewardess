@@ -42,7 +42,7 @@ Stewardess.prototype.run = function() {
 
   // push the callback onto the arguments
   args.push(function(err) {
-    if (err) return this._error(err, args);
+    if (err) return self._error(err, args);
     self.emit.apply(self, afterArgs);
     next();
   });
@@ -88,6 +88,11 @@ Stewardess.prototype.bind = function() {
 
 Stewardess.prototype.add = function(fn) {
   this.queue.push(fn);
+  return this;
+}
+
+Stewardess.prototype.addBefore = function(fn) {
+  this.queue.unshift(fn);
   return this;
 }
 

@@ -7,6 +7,8 @@ var stewardess = require('./index')
 describe('testing stewardess', function() {
   it('should run serially', basicTest);
   it('should add methods with .add()', testAdd);
+  it('should add methods with .addBefore()', testAddBefore);
+  it('should receive callback errors and not continue', callbackErrors);
   it('should catch errors and not continue', catchErrors);
   it('should execute before, after, and done events', testEvents);
   it('should pass arguments from run the each method', passArgs);
@@ -66,6 +68,47 @@ function testAdd() {
     .run();
 
   assert.equal(i, 3);
+
+}
+
+function testAddBefore() {
+  var i = 0;
+  stewardess()
+    .add(function(next) {
+      ++i;
+      assert.equal(i, 2);
+      next();
+    })
+    .add(function(next) {
+      ++i;
+      assert.equal(i, 3);
+      next();
+    })
+    .addBefore(function(next) {
+      ++i;
+      assert.equal(i, 1);
+      next();
+    })
+    .run();
+
+  assert.equal(i, 3);
+
+}
+
+function callbackErrors() {
+
+  stewardess(
+    function(done) {
+      done(new Error('oh noes'));
+    },
+    function(done) {
+      done(new Error('should never run'));
+    }
+  )
+  .error(function(err) {
+    assert.equal(err.message, 'oh noes');
+  })
+  .run();
 
 }
 

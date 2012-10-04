@@ -40,10 +40,6 @@ stewardess(
 ```javascript
 stewardess(
   function(next) {
-    // this function goes first
-    next();
-  },
-  function(next) {
     // this function goes second
     next();
   }
@@ -52,6 +48,10 @@ stewardess(
   // this function goes third
   next();
 })
+.addBefore(function(next) {
+  // this function goes first
+  next();
+}),
 .before(function() {
   // this is called before each function
 })
