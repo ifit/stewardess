@@ -11,6 +11,7 @@ describe('testing stewardess', function() {
   it('should receive callback errors and not continue', callbackErrors);
   it('should catch errors and not continue', catchErrors);
   it('should execute before, after, and done events', testEvents);
+  it('should send function name to before and after events', testFunctionNameEvents);
   it('should pass arguments from run the each method', passArgs);
   it('should send arguments to error handler', errorArgs);
   it('should return a repeatable function with bind()', repeatWithBind);
@@ -159,6 +160,33 @@ function testEvents() {
   .run();
 
   assert.equal(calls, 3);
+
+}
+
+function testFunctionNameEvents() {
+  var obj = {};
+  var first = true;
+
+  stewardess(
+    function foo(_obj, next) {
+      next();
+    },
+    function(_obj, next) {
+      next();
+    }
+  )
+  .before(function(_obj, name) {
+  })
+  .after(function(_obj, name) {
+    assert.equal(obj, _obj);
+    if (first) {
+      assert.equal(name, 'foo');
+      first = false;
+    } else {
+      assert.equal(name, 'anonymous');
+    }
+  })
+  .run(obj);
 
 }
 

@@ -27,6 +27,7 @@ Stewardess.prototype.run = function() {
     , queuePos = 0
     , self = this
     , context = this.context || this
+    , fnName
     , args = ( arguments.length === 1
              ? [arguments[0]]
              : Array.apply(null, arguments));
@@ -37,12 +38,15 @@ Stewardess.prototype.run = function() {
     , doneArgs = args.concat();
 
   afterArgs.unshift('after');
+  afterArgs.push(null);
   beforeArgs.unshift('before');
+  beforeArgs.push(null);
   doneArgs.unshift('done');
 
   // push the callback onto the arguments
   args.push(function(err) {
     if (err) return self._error(err, args);
+    afterArgs[afterArgs.length - 1] = fnName;
     self.emit.apply(self, afterArgs);
     next();
   });
@@ -53,10 +57,12 @@ Stewardess.prototype.run = function() {
   function next() {
     // check if we are finished
     if (queuePos < queue.length) {
-      self.emit.apply(self, beforeArgs);
-
       // get next method
       var fn = queue[queuePos++];
+      fnName = fn.name || 'anonymous';
+
+      beforeArgs[beforeArgs.length - 1] = fnName;
+      self.emit.apply(self, beforeArgs);
 
       try {
         fn.apply(context, args);
