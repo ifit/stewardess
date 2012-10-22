@@ -23,7 +23,7 @@ describe('testing stewardess', function() {
   it('simple performance test', performanceTest);
 });
 
-function basicTest() {
+function basicTest(done) {
   var i = 0
 
   stewardess(
@@ -42,13 +42,17 @@ function basicTest() {
       assert.equal(i, 3);
       next();
     }
-  ).run();
+  )
+  .done(function() {
+    assert.equal(i, 3);
+    done();
+  })
+  .run();
 
-  assert.equal(i, 3);
 
 }
 
-function testAdd() {
+function testAdd(done) {
   var i = 0;
   stewardess()
     .add(function(next) {
@@ -66,13 +70,16 @@ function testAdd() {
       assert.equal(i, 3);
       next();
     })
+    .done(function() {
+      assert.equal(i, 3);
+      done();
+    })
     .run();
 
-  assert.equal(i, 3);
 
 }
 
-function testAddBefore() {
+function testAddBefore(done) {
   var i = 0;
   stewardess()
     .add(function(next) {
@@ -90,9 +97,12 @@ function testAddBefore() {
       assert.equal(i, 1);
       next();
     })
+    .done(function() {
+      assert.equal(i, 3);
+      done();
+    })
     .run();
 
-  assert.equal(i, 3);
 
 }
 
@@ -157,9 +167,11 @@ function testEvents() {
   .error(function(err) {
     throw err;
   })
+  .done(function() {
+    assert.equal(calls, 3);
+  })
   .run();
 
-  assert.equal(calls, 3);
 
 }
 
@@ -219,9 +231,10 @@ function errorArgs() {
 
 }
 
-function repeatWithBind() {
+function repeatWithBind(done) {
   var foo = {}
     , bar = {}
+    , count = 0
 
   var fns = stewardess(
     function(obj, next) {
@@ -236,20 +249,31 @@ function repeatWithBind() {
       obj.c = 'c';
       next();
     }
-  ).bind();
+  )
+  .done(runAsserts)
+  .bind();
 
   fns(foo);
   fns(bar);
-  assert.deepEqual(foo, {
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  });
-  assert.deepEqual(bar, {
-    a: 'a',
-    b: 'b',
-    c: 'c'
-  });
+
+  function runAsserts() {
+    count++;
+    if (count !== 2) return;
+
+    assert.deepEqual(foo, {
+      a: 'a',
+      b: 'b',
+      c: 'c'
+    });
+
+    assert.deepEqual(bar, {
+      a: 'a',
+      b: 'b',
+      c: 'c'
+    });
+
+    done();
+  }
 
 }
 
@@ -296,10 +320,12 @@ function testContext() {
   .done(function() {
     context = 7;
   })
+  .done(function() {
+    assert.equal(context, 7);
+  })
   .context(context)
   .run();
 
-  assert.equal(context, 7);
 
 }
 
@@ -320,10 +346,12 @@ function testContextAndArgs() {
   .done(function() {
     context = 'rawr';
   })
+  .done(function() {
+    assert.equal(context, 'rawr');
+  })
   .context(context)
   .run('meow', 'mix');
 
-  assert.equal(context, 'rawr');
 
 }
 
