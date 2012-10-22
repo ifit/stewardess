@@ -48,7 +48,7 @@ Stewardess.prototype.run = function() {
     if (err) return self._error(err, args);
     afterArgs[afterArgs.length - 1] = fnName;
     self.emit.apply(self, afterArgs);
-    next();
+    process.nextTick(next);
   });
 
   // start
