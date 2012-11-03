@@ -11,6 +11,7 @@ describe('testing stewardess', function() {
   it('should receive callback errors and not continue', callbackErrors);
   it('should catch errors and not continue', catchErrors);
   it('should execute before, after, and done events', testEvents);
+  it('should break and fire done event and not continue', testBreak);
   it('should send function name to before and after events', testFunctionNameEvents);
   it('should pass arguments from run the each method', passArgs);
   it('should send arguments to error handler', errorArgs);
@@ -106,7 +107,7 @@ function testAddBefore(done) {
 
 }
 
-function callbackErrors() {
+function callbackErrors(done) {
 
   stewardess(
     function(done) {
@@ -118,12 +119,13 @@ function callbackErrors() {
   )
   .error(function(err) {
     assert.equal(err.message, 'oh noes');
+    done();
   })
   .run();
 
 }
 
-function catchErrors() {
+function catchErrors(done) {
 
   stewardess(
     function() {
@@ -135,12 +137,13 @@ function catchErrors() {
   )
   .error(function(err) {
     assert.equal(err.message, 'oh noes');
+    done();
   })
   .run();
 
 }
 
-function testEvents() {
+function testEvents(done) {
 
   var meow = 'mix'
     , calls = 0;
@@ -169,13 +172,37 @@ function testEvents() {
   })
   .done(function() {
     assert.equal(calls, 3);
+    done();
   })
   .run();
 
 
 }
 
-function testFunctionNameEvents() {
+function testBreak(done) {
+  var first, second, after;
+  stewardess(
+    function(next) {
+      first = true;
+      next('break');
+    },
+    function(next) {
+      second = true;
+    }
+  )
+  .after(function() {
+    after = true;
+  })
+  .done(function() {
+    assert.ok(first);
+    assert.ok(after);
+    assert.ok(!second);
+    done();
+  })
+  .run();
+}
+
+function testFunctionNameEvents(done) {
   var obj = {};
   var first = true;
 
@@ -198,11 +225,14 @@ function testFunctionNameEvents() {
       assert.equal(name, 'anonymous');
     }
   })
+  .done(function() {
+    done();
+  })
   .run(obj);
 
 }
 
-function passArgs() {
+function passArgs(done) {
 
   stewardess(
     function(meow, mix, next) {
@@ -217,17 +247,23 @@ function passArgs() {
       next();
     }
   )
+  .done(function() {
+    done();
+  })
   .run('meow', {meow: 'mix'});
 
 }
 
-function errorArgs() {
+function errorArgs(done) {
 
   stewardess(function() {
     throw 'oh noes';
-  }).error(function(err, meow) {
+  })
+  .error(function(err, meow) {
     assert.equal(meow, 'meow');
-  }).run('meow');
+    done();
+  })
+  .run('meow');
 
 }
 
@@ -305,7 +341,7 @@ function concurrentBind(done) {
 
 }
 
-function testContext() {
+function testContext(done) {
   var context = 'meow to the mix';
 
   function checkContext(cb) {
@@ -323,13 +359,16 @@ function testContext() {
   .done(function() {
     assert.equal(context, 7);
   })
+  .done(function() {
+    done();
+  })
   .context(context)
   .run();
 
 
 }
 
-function testContextAndArgs() {
+function testContextAndArgs(done) {
   var context = 'some things are contextual';
 
   function checkContextAndArgs(meow, mix, cb) {
@@ -349,13 +388,16 @@ function testContextAndArgs() {
   .done(function() {
     assert.equal(context, 'rawr');
   })
+  .done(function() {
+    done();
+  })
   .context(context)
   .run('meow', 'mix');
 
 
 }
 
-function testErrorContext() {
+function testErrorContext(done) {
   var context = 'oh hay their';
 
   stewardess(function() {
@@ -363,6 +405,7 @@ function testErrorContext() {
   })
   .error(function() {
     assert.equal(this, context);
+    done();
   })
   .context(context)
   .run();
