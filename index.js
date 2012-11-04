@@ -45,9 +45,10 @@ Stewardess.prototype.run = function() {
 
   // push the callback onto the arguments
   args.push(function(err) {
-    if (err) return self._error(err, args);
+    if (err && err !== 'break') return self._error(err, args);
     afterArgs[afterArgs.length - 1] = fnName;
     self.emit.apply(self, afterArgs);
+    if (err === 'break') return self.emit.apply(self, doneArgs);
     process.nextTick(next);
   });
 

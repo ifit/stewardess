@@ -117,16 +117,13 @@ var handle = stewardess(
   },
   function(req, res, next) {
     if (req.headers && /^curl/.test(req.headers['user-agent'])) {
-      req.isCurl = true;
+      res.end('yur usin curl!');
+      next('break'); // fire 'done' and stop
     }
     next();
   },
   function(req, res, next) {
-    if (req.isCurl) {
-      res.end('yur usin curl!');
-    } else {
-      res.end('oh hai');
-    }
+    res.end('oh hai');
     next();
   }
 )
@@ -136,11 +133,11 @@ var handle = stewardess(
 })
 .after(function(req, res) {
   var t = process.hrtime(req.lastStart);
-  console.log('middleware ' + req.i + ' took %d seconds and %d nanoseconds', t[0], t[1]);
+  console.log('middleware ' + req.i + ' took %d seconds and %d ms', t[0], t[1]/1000000);
 })
 .done(function(req, res) {
   var t = process.hrtime(req.startTime);
-  console.log(req.url + ' served in %d seconds and %d nanoseconds', t[0], t[1]);
+  console.log(req.url + ' served in %d seconds and %d ms', t[0], t[1]/1000000);
 })
 .done(function(req, res) {
   console.log(req.url + ' served with status ' + res.statusCode);
