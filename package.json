@@ -4,7 +4,7 @@
   "description": "serial async flow control",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test --reporter spec --slow 1"
+    "test": "mocha test/index.js test"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,8 @@
     "async"
   ],
   "author": "Adam Blackburn",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "colors": "~0.6.0-1"
+  }
 }

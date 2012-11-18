@@ -1,6 +1,6 @@
 "use strict";
 
-var stewardess = require('./index')
+var stewardess = require('../index')
   , assert = require('assert')
   ;
 
@@ -20,8 +20,6 @@ describe('testing stewardess', function() {
   it('should set context', testContext);
   it('should set context and args', testContextAndArgs);
   it('should send context to errors', testErrorContext);
-  it('perfomance baseline', baselinePerformance);
-  it('simple performance test', performanceTest);
 });
 
 function basicTest(done) {
@@ -409,33 +407,4 @@ function testErrorContext(done) {
   })
   .context(context)
   .run();
-}
-
-function baselinePerformance() {
-  function incr(i, cb) {
-    ++i;
-    cb();
-  }
-
-  for (var i = 0; i < 10000; ++i) {
-    incr(i, function(){});
-    incr(i, function(){});
-    incr(i, function(){});
-    incr(i, function(){});
-    incr(i, function(){});
-  }
-
-}
-
-function performanceTest() {
-  function incr(i, cb) {
-    ++i;
-    cb();
-  }
-
-  var go = stewardess(incr, incr, incr, incr, incr).bind();
-  for (var i = 0; i < 10000; ++i) {
-    go(i);
-  }
-
 }
