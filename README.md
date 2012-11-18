@@ -147,3 +147,21 @@ var handle = stewardess(
 
 http.Server(handle).listen(8080);
 ```
+
+### Call `next('break')` to skip to the end
+
+```javascript
+stewardess(
+  function(options, next) {
+    options.meow = 'mix';
+    next('break');
+  },
+  function(options, next) {
+    throw new Error("should never run");
+  }
+)
+.done(function(options) {
+  assert.equal(options.meow, 'mix');
+})
+.run({});
+```
