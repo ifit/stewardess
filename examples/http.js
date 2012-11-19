@@ -16,8 +16,9 @@ var handle = stewardess(
     if (req.headers && /^curl/.test(req.headers['user-agent'])) {
       res.end('yur usin curl!');
       next('break'); // fire 'done' and stop
+    } else {
+      next();
     }
-    next();
   },
   function(req, res, next) {
     res.end('oh hai');
