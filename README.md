@@ -166,3 +166,58 @@ stewardess(
 })
 .run({});
 ```
+
+### Create plugins to repeat setup
+
+```javascript
+function myRillyCoolPlugin(stewardess, options) {
+  stewardess
+  .before(function(options, name) {
+    console.log('entering ' + name);
+  })
+  .after(function(options, name) {
+    console.log('leaving ' + name);
+  })
+  .done(function(options) {
+    console.log('all done!');
+  });
+}
+
+
+stewardess(
+  function first(options, next) {
+    options.foo = 'bar';
+  },
+  function second(options, next) {
+    options.baz = 'bam';
+  },
+  function third(options, next) {
+    options.fish = 'sticks';
+  }
+)
+.plugin(myRillyCoolPlugin)
+.run({});
+```
+
+### Stewardess comes with a couple of handy plugins
+
+All of the builtin stewardess plugins require the first argument to be
+an object.
+
+```javascript
+stewardess(
+  function first(options, next) {
+    setTimeout(next, 100);
+  },
+  function second(options, next) {
+    for (var i = 0; i < 10000; ++i) {
+      Math.pow(i);
+    }
+    next();
+  }
+)
+.plugin(stewardess.plugins.timer) // print the milliseconds taken for each method
+.plugin(stewardess.plugins.hrTimer) // same as timer, but with nanosecond precision
+.plugin(stewardess.plugins.overallTime) // print the time for the entire stack to run
+.run({});
+```
