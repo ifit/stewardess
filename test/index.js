@@ -20,6 +20,8 @@ describe('testing stewardess', function() {
   it('should set context', testContext);
   it('should set context and args', testContextAndArgs);
   it('should send context to errors', testErrorContext);
+  it('should execute final event after done', finalAfterDone);
+  it('should execute final event after error', finalAfterError);
 });
 
 function basicTest(done) {
@@ -406,5 +408,37 @@ function testErrorContext(done) {
     done();
   })
   .context(context)
+  .run();
+}
+
+function finalAfterDone(done) {
+  var doneDone = false;
+
+  stewardess(function(next) {
+    next();
+  })
+  .done(function() {
+    doneDone = true;
+  })
+  .final(function() {
+    assert.ok(doneDone);
+    done();
+  })
+  .run();
+}
+
+function finalAfterError(done) {
+  var errorDone = false;
+
+  stewardess(function() {
+    throw 'meow';
+  })
+  .error(function() {
+    errorDone = true;
+  })
+  .final(function() {
+    assert.ok(errorDone);
+    done();
+  })
   .run();
 }
