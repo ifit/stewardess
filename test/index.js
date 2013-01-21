@@ -5,23 +5,40 @@ var stewardess = require('../index')
   ;
 
 describe('testing stewardess', function() {
-  it('should run serially', basicTest);
-  it('should add methods with .add()', testAdd);
-  it('should add methods with .addBefore()', testAddBefore);
-  it('should receive callback errors and not continue', callbackErrors);
-  it('should catch errors and not continue', catchErrors);
-  it('should execute before, after, and done events', testEvents);
-  it('should break and fire done event and not continue', testBreak);
-  it('should send function name to before and after events', testFunctionNameEvents);
-  it('should pass arguments from run the each method', passArgs);
-  it('should send arguments to error handler', errorArgs);
-  it('should return a repeatable function with bind()', repeatWithBind);
-  it('should operate two calls concurrently', concurrentBind);
-  it('should set context', testContext);
-  it('should set context and args', testContextAndArgs);
-  it('should send context to errors', testErrorContext);
-  it('should execute final event after done', finalAfterDone);
-  it('should execute final event after error', finalAfterError);
+  describe('the basics', function() {
+    it('should run serially', basicTest);
+    it('should add methods with .add()', testAdd);
+    it('should add methods with .addBefore()', testAddBefore);
+    it('should pass arguments from run the each method', passArgs);
+    it('should set context', testContext);
+    it('should set context and args', testContextAndArgs);
+  });
+
+  describe('bind and repeat', function() {
+    it('should return a repeatable function with bind()', repeatWithBind);
+    it('should operate two calls concurrently', concurrentBind);
+  });
+
+  describe('events', function() {
+    it('should execute before, after, and done events', testEvents);
+    it('should send function name to before and after events', testFunctionNameEvents);
+    it('should execute final event after done', finalAfterDone);
+    it('should execute final event after error', finalAfterError);
+  });
+
+  describe('error handling', function() {
+    it('should receive callback errors and not continue', callbackErrors);
+    it('should catch errors and not continue', catchErrors);
+    it('should send arguments to error handler', errorArgs);
+    it('should send context to errors', testErrorContext);
+  });
+
+  describe('break and skip', function() {
+    it('should break and fire done event and not continue', testBreak);
+    it('should skip a method if err is "skip"', skipMethod);
+    it('should skip last method and emit done', skipLastMethod);
+  });
+
 });
 
 function basicTest(done) {
@@ -438,6 +455,48 @@ function finalAfterError(done) {
   })
   .final(function() {
     assert.ok(errorDone);
+    done();
+  })
+  .run();
+}
+
+function skipMethod(done) {
+  var n = 0;
+
+  stewardess(
+    function(next) {
+      n += 1;
+      next('skip');
+    },
+    function (next) {
+      throw new Error('should never run');
+    },
+    function (next) {
+      n += 1;
+      next();
+    }
+  )
+  .done(function() {
+    assert.equal(n, 2);
+    done();
+  })
+  .run();
+}
+
+function skipLastMethod(done) {
+  var n = 0;
+
+  stewardess(
+    function(next) {
+      n += 1;
+      next('skip');
+    },
+    function (next) {
+      throw new Error('should never run');
+    }
+  )
+  .done(function() {
+    assert.equal(n, 1);
     done();
   })
   .run();
