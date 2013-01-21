@@ -65,6 +65,9 @@ stewardess(
   // if any method throws an error,
   // or calls next(err), it ends up here
 })
+.final(function() {
+  // this is called after done or error is called
+})
 .context({'some':'object'}) // set this-ness for all callbacks
 .run(); // this starts it
 ```
@@ -149,6 +152,24 @@ var handle = stewardess(
 http.Server(handle).listen(8080);
 ```
 
+### Call `next('skip')` to skip a method
+
+```javascript
+stewardess(
+  function(options, next) {
+    options.meow = 'mix';
+    next('skip');
+  },
+  function(options, next) {
+    throw new Error('should never run');
+  }, 
+  function(options, next) {
+    console.log(options.meow);
+  }
+)
+.run({});
+```
+
 ### Call `next('break')` to skip to the end
 
 ```javascript
@@ -170,7 +191,11 @@ stewardess(
 ### Create plugins to repeat setup
 
 ```javascript
-function myRillyCoolPlugin(stewardess, options) {
+function myRillyCoolPlugin(stewardess, pluginOptions) {
+  if (pluginOptions.rilly === 'ossum') {
+    console.log('yur ossum');
+  }
+
   stewardess
   .before(function(options, name) {
     console.log('entering ' + name);
@@ -183,6 +208,9 @@ function myRillyCoolPlugin(stewardess, options) {
   });
 }
 
+var pluginOptions = {
+  rilly: 'ossum'
+}
 
 stewardess(
   function first(options, next) {
@@ -195,7 +223,7 @@ stewardess(
     options.fish = 'sticks';
   }
 )
-.plugin(myRillyCoolPlugin)
+.plugin(myRillyCoolPlugin, pluginOptions)
 .run({});
 ```
 
@@ -221,3 +249,11 @@ stewardess(
 .plugin(stewardess.plugins.overallTime) // print the time for the entire stack to run
 .run({});
 ```
+
+### Testing
+
+Run `npm test`. Requires mocha.
+
+## License
+
+stewardess is published under an MIT style license.
