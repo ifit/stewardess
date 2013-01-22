@@ -188,6 +188,34 @@ stewardess(
 .run({});
 ```
 
+### Call `next('previous')` to skip to the end
+
+This allows for a pattern of checking and filling a cache.
+
+```javascript
+var cache = null;
+
+var checkCache = stewardess(
+  function checkCache(next) {
+    if (cache) {
+      return next('skip');
+    }
+    next();
+  },
+
+  function setCache(next) {
+    cache = 8;
+    next('previous');
+  },
+
+  function useCache(next) {
+    assert.equal(cache, 8);
+    next();
+  }
+)
+.bind();
+```
+
 ### Create plugins to repeat setup
 
 ```javascript

@@ -33,10 +33,14 @@ describe('testing stewardess', function() {
     it('should send context to errors', testErrorContext);
   });
 
-  describe('break and skip', function() {
+  describe('break, skip, previous', function() {
     it('should break and fire done event and not continue', testBreak);
     it('should skip a method if err is "skip"', skipMethod);
     it('should skip last method and emit done', skipLastMethod);
+    it('should go back to the previous method', previousMethod);
+    it('should repeat the previous method', previousMethodRepeat);
+    it('should repeat the first method if it calls previous', firstPrevious);
+    it('should allow next, previous, skip pattern', nextPreviousSkip);
   });
 
 });
@@ -497,6 +501,105 @@ function skipLastMethod(done) {
   )
   .done(function() {
     assert.equal(n, 1);
+    done();
+  })
+  .run();
+}
+
+function previousMethod(done) {
+  var secondDone = false;
+
+  stewardess(
+    function(next) {
+      if (secondDone) {
+        done();
+      } else {
+        next();
+      }
+    },
+
+    function(next) {
+      secondDone = true;
+      next('previous');
+    }
+  )
+  .run()
+}
+
+function previousMethodRepeat(done) {
+  var firstCount = 0;
+  var secondDone = false;
+
+  stewardess(
+    function(next) {
+      ++firstCount;
+      if (secondDone) {
+        done();
+      } else {
+        next();
+      }
+    },
+
+    function(next) {
+      if (!secondDone) {
+        secondDone = true;
+        return next('previous');
+      }
+      next();
+    },
+
+    function(next) {
+      assert.equal(firstCount, 2);
+      next();
+    }
+  )
+  .done(function() {
+    done();
+  })
+  .run()
+}
+
+function firstPrevious(done) {
+  var count = 0;
+
+  stewardess(
+    function(next) {
+      if (count < 5) {
+        count += 1;
+        return next('previous');
+      }
+      next();
+    }
+  )
+  .done(function() {
+    assert.equal(count, 5);
+    done();
+  })
+  .run();
+}
+
+function nextPreviousSkip(done) {
+  var cache = null;
+
+  stewardess(
+    function checkCache(next) {
+      if (cache) {
+        return next('skip');
+      }
+      next();
+    },
+
+    function setCache(next) {
+      cache = 8;
+      next('previous');
+    },
+
+    function useCache(next) {
+      assert.equal(cache, 8);
+      next();
+    }
+  )
+  .done(function() {
     done();
   })
   .run();
