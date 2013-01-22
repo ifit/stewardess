@@ -188,7 +188,7 @@ stewardess(
 .run({});
 ```
 
-### Call `next('previous')` to skip to the end
+### Call `next('previous')` to go back one method
 
 This allows for a pattern of checking and filling a cache.
 
