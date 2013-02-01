@@ -170,6 +170,15 @@ stewardess(
 .run({});
 ```
 
+### Call `next('repeat')` to repeat a step
+
+```javascript
+stewardess(function(next) {
+    // this will repeat infinitely
+    next('repeat');
+}).run();
+```
+
 ### Call `next('break')` to skip to the end
 
 ```javascript
