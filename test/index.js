@@ -33,13 +33,14 @@ describe('testing stewardess', function() {
     it('should send context to errors', testErrorContext);
   });
 
-  describe('break, skip, previous', function() {
+  describe('break, skip, previous, repeat', function() {
     it('should break and fire done event and not continue', testBreak);
     it('should skip a method if err is "skip"', skipMethod);
     it('should skip last method and emit done', skipLastMethod);
     it('should go back to the previous method', previousMethod);
     it('should repeat the previous method', previousMethodRepeat);
     it('should repeat the first method if it calls previous', firstPrevious);
+    it('should repeat a method if it calls repeat', repeatMethod);
     it('should allow next, previous, skip pattern', nextPreviousSkip);
   });
 
@@ -573,6 +574,27 @@ function firstPrevious(done) {
   )
   .done(function() {
     assert.equal(count, 5);
+    done();
+  })
+  .run();
+}
+
+function repeatMethod(done) {
+  var n = 0;
+
+  stewardess(
+    function repeater(next) {
+      n += 1;
+      if (n < 5) return next('repeat');
+      next();
+    },
+
+    function verify(next) {
+      assert.equal(n, 5);
+      next();
+    }
+  )
+  .done(function() {
     done();
   })
   .run();
