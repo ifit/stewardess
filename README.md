@@ -289,7 +289,7 @@ stewardess(
 
 ### Mongoose Queries
 
-Stewardess will recognize (mongoose)[http://mongoosejs.com/] queries, and run them for you.
+Stewardess will recognize [mongoose](http://mongoosejs.com/) queries, and run them for you.
 You just need to make sure the first parameter is an
 object, and call comment to tell stewardess which property to store the
 results under.
