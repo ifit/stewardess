@@ -287,6 +287,33 @@ stewardess(
 .run({});
 ```
 
+### Mongoose Queries
+
+Stewardess will recognize [mongoose](http://mongoosejs.com/) queries, and run them for you.
+You just need to make sure the first parameter is an
+object, and call comment to tell stewardess which property to store the
+results under.
+
+```javascript
+stewardess(
+
+  MongoosePersonModel
+    .find()
+    .select({ name: 1, age: 1 })
+    .sort('age')
+    .comment('people'), // this tells stewardess where to put the results
+
+  function printPeople(options, next) {
+    options.people.forEach(function(person) {
+      console.log(person.name, person.age);
+    });
+    next();
+  }
+
+)
+.run({});
+```
+
 ### Testing
 
 Run `npm test`. Requires mocha.

@@ -1,6 +1,6 @@
 {
   "name": "stewardess",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "serial async flow control",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,11 @@
   "license": "MIT",
   "dependencies": {
     "colors": "~0.6.0-1"
+  },
+  "devDependencies": {
+    "mongoose": "3.6.x"
+  },
+  "peerDependencies": {
+    "mongoose": "*"
   }
 }
