@@ -1,4 +1,5 @@
-var stewardess = require('./lib/index')
+var stewardess = require('./lib/index');
+
 stewardess.plugins = {
   timer: require('./plugins/timer'),
   hrTimer: require('./plugins/hr-timer'),
