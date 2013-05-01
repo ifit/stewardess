@@ -7,6 +7,7 @@ var stewardess = require('../index')
 describe('benchmark stewardess', function() {
   it('perfomance baseline', baselinePerformance);
   it('simple performance test', performanceTest);
+  it('naive performance test', naivePerformanceTest);
 });
 
 function baselinePerformance() {
@@ -16,11 +17,9 @@ function baselinePerformance() {
   }
 
   for (var i = 0; i < 10000; ++i) {
-    incr(i, function(){});
-    incr(i, function(){});
-    incr(i, function(){});
-    incr(i, function(){});
-    incr(i, function(){});
+    incr(i, function(){}); incr(i, function(){}); incr(i, function(){});
+    incr(i, function(){}); incr(i, function(){}); incr(i, function(){});
+    incr(i, function(){}); incr(i, function(){}); incr(i, function(){});
   }
 
 }
@@ -31,9 +30,25 @@ function performanceTest() {
     cb();
   }
 
-  var go = stewardess(incr, incr, incr, incr, incr).bind();
+  var go = stewardess(incr, incr, incr,
+                      incr, incr, incr,
+                      incr, incr, incr).bind();
   for (var i = 0; i < 10000; ++i) {
     go(i);
+  }
+
+}
+
+function naivePerformanceTest() {
+  function incr(i, cb) {
+    ++i;
+    cb();
+  }
+
+  for (var i = 0; i < 10000; ++i) {
+    stewardess(incr, incr, incr,
+               incr, incr, incr,
+               incr, incr, incr).run(i);
   }
 
 }
