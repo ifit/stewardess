@@ -6,4 +6,8 @@ stewardess.plugins = {
   overallTime: require('./plugins/overall-time')
 }
 
+stewardess.skip = function() {
+  arguments[arguments.length - 1]('skip')
+}
+
 module.exports = stewardess;

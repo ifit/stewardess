@@ -1,6 +1,6 @@
 {
   "name": "stewardess",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "serial async flow control",
   "main": "index.js",
   "scripts": {
