@@ -1,10 +1,10 @@
 "use strict";
 
-var colors = require('colors')
-  , defaults = require('./defaults')
-  ;
+var defaults = require('./defaults');
 
 function timer(stewardess, options) {
+  var colors = require('colors');
+
   options = defaults(options, {
     slow: 0,
     log: console.log.bind(console),
