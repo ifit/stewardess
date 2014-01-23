@@ -225,6 +225,62 @@ var checkCache = stewardess(
 .bind();
 ```
 
+### Call `next('beginning')` to go back to restart the chain
+
+```javascript
+var cats = [ 'Gary' ];
+stewardess(
+  function first(options, next) {
+    options.cats.indexOf('Gebbeth') == -1 ? options.cats.push('Gebbeth') : options.cats.push('Rorschach');
+    return next(options.cats.length > 3 ? 'break' : null); // the `break' here prevents an infinite loop
+  },
+  function second(options, next) {
+    options.cats.push('Crook');
+    return next();
+  },
+  function third(options, next) {
+    options.cats.push('Sarah');
+    return next('beginning');
+  }
+)
+.done(function(options) {
+  process.stdout.write('cats: ');
+  console.log(options.cats);
+})
+.plugin(stewardess.plugins.timer)
+.run({cats: cats});
+```
+
+## Call `next('ending')` to skip to the very last method in the chain
+
+```javascript
+var idex = 0;
+stewardess(
+  function a(options, next) {
+    return next(options.idex > 4 ? 'ending' : null);
+  },
+  function b(options, next) {
+    return next(options.idex > 2 ? 'skip' : null);
+  },
+  function c(options, next) {
+    return next('previous');
+  },
+  function d(options, next) {
+    return next('beginning');
+  },
+  function e(options, next) {
+    return next();
+  }
+)
+.before(function(options) {
+  options.idex++;
+})
+.done(function() {
+  console.log('done');
+})
+.run({idex: idex});
+```
+
 ### Create plugins to repeat setup
 
 ```javascript
