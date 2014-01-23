@@ -225,7 +225,7 @@ var checkCache = stewardess(
 .bind();
 ```
 
-### Call `next('beginning')` to go back to restart the chain
+### Call `next('beginning')` to restart the chain
 
 ```javascript
 var cats = [ 'Gary' ];
@@ -247,11 +247,10 @@ stewardess(
   process.stdout.write('cats: ');
   console.log(options.cats);
 })
-.plugin(stewardess.plugins.timer)
 .run({cats: cats});
 ```
 
-## Call `next('ending')` to skip to the very last method in the chain
+## Call `next('ending')` to skip all but the last method
 
 ```javascript
 var idex = 0;
