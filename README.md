@@ -250,7 +250,7 @@ stewardess(
 .run({cats: cats});
 ```
 
-## Call `next('ending')` to skip all but the last method
+### Call `next('ending')` to skip all but the last method
 
 ```javascript
 var idex = 0;
