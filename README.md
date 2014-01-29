@@ -228,26 +228,26 @@ var checkCache = stewardess(
 ### Call `next('beginning')` to restart the chain
 
 ```javascript
-var cats = [ 'Gary' ];
 stewardess(
   function first(options, next) {
-    options.cats.indexOf('Gebbeth') == -1 ? options.cats.push('Gebbeth') : options.cats.push('Rorschach');
-    return next(options.cats.length > 3 ? 'break' : null); // the `break' here prevents an infinite loop
+    return next(options.idex > 10 ? 'skip' : null);
   },
   function second(options, next) {
-    options.cats.push('Crook');
+    options.arr.push(idex);
     return next();
   },
   function third(options, next) {
-    options.cats.push('Sarah');
-    return next('beginning');
+    return next(options.idex > 10 ? null : 'beginning');
   }
 )
-.done(function(options) {
-  process.stdout.write('cats: ');
-  console.log(options.cats);
+.after(function(options) {
+  options.idex++;
 })
-.run({cats: cats});
+.done(function(options) {
+  process.stdout.write('arr: ');
+  console.log(options.arr);
+})
+.run({arr: [], idex: 0});
 ```
 
 ### Call `next('ending')` to skip all but the last method
