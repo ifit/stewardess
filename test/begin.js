@@ -1,6 +1,5 @@
 "use strict";
-var stewardess = require('../index')
-  ;
+var stewardess = require('../index');
 
 stewardess(
   function first(options, next) {
@@ -11,7 +10,7 @@ stewardess(
     return next();
   },
   function third(options, next) {
-    return next(options.idex > 10 ? null : 'beginning');
+    return next(options.idex > 10 ? null : 'restart');
   }
 )
 .after(function(options) {

@@ -225,7 +225,7 @@ var checkCache = stewardess(
 .bind();
 ```
 
-### Call `next('beginning')` to restart the chain
+### Call `next('restart')` to restart the chain
 
 ```javascript
 stewardess(
@@ -237,7 +237,7 @@ stewardess(
     return next();
   },
   function third(options, next) {
-    return next(options.idex > 10 ? null : 'beginning');
+    return next(options.idex > 10 ? null : 'restart');
   }
 )
 .after(function(options) {
@@ -248,36 +248,6 @@ stewardess(
   console.log(options.arr);
 })
 .run({arr: [], idex: 0});
-```
-
-### Call `next('ending')` to skip all but the last method
-
-```javascript
-var idex = 0;
-stewardess(
-  function a(options, next) {
-    return next(options.idex > 4 ? 'ending' : null);
-  },
-  function b(options, next) {
-    return next(options.idex > 2 ? 'skip' : null);
-  },
-  function c(options, next) {
-    return next('previous');
-  },
-  function d(options, next) {
-    return next('beginning');
-  },
-  function e(options, next) {
-    return next();
-  }
-)
-.before(function(options) {
-  options.idex++;
-})
-.done(function() {
-  console.log('done');
-})
-.run({idex: idex});
 ```
 
 ### Create plugins to repeat setup
