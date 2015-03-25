@@ -33,6 +33,10 @@ describe('testing stewardess', function() {
     it('should send context to errors', testErrorContext);
   });
 
+  describe('only called once', function() {
+    it('should not execute next multiple times', multipleNext);
+  })
+
   describe('break, skip, previous, repeat', function() {
     it('should break and fire done event and not continue', testBreak);
     it('should skip a method if err is "skip"', skipMethod);
@@ -461,6 +465,24 @@ function finalAfterError(done) {
   .final(function() {
     assert.ok(errorDone);
     done();
+  })
+  .run();
+}
+
+function multipleNext(done) {
+  var calledCount = 0;
+  stewardess(function(next) {
+    next();
+    next();
+  })
+  .done(function() {
+    calledCount++;
+  })
+  .final(function() {
+    setTimeout(function() {
+      assert.ok(calledCount === 1);
+      done();
+    }, 100);
   })
   .run();
 }
