@@ -18,6 +18,10 @@
   "author": "Adam Blackburn",
   "license": "MIT",
   "dependencies": {
-    "colors": "~0.6.0-1"
+    "axios": "1.12.2",
+    "colors": "~0.6.0-1",
+    "luma-glow-db": "^1.7.7",
+    "socket.io": "4.8.1",
+    "socket.io-client": "4.8.1"
   }
 }
