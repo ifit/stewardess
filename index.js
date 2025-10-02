@@ -1,5 +1,4 @@
 var stewardess = require('./lib/index');
-const glowDB = require('luma-glow-db');
 
 stewardess.plugins = {
   timer: require('./plugins/timer'),
