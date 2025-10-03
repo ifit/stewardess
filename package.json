@@ -18,7 +18,6 @@
   "author": "Adam Blackburn",
   "license": "MIT",
   "dependencies": {
-    "axios": "1.12.2",
     "colors": "~0.6.0-1"
   }
 }
